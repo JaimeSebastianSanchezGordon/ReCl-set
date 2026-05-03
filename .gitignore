@@ -1,0 +1,83 @@
+# Laravel Framework
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/bootstrap/cache
+
+# Environment Configuration
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# IDE & Editor
+.vscode
+.idea
+/.cursor/
+/.nova/
+/.zed/
+.phpactor.json
+.sublime-project
+.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Build & Optimization
+/.codex
+/.phpunit.cache
+_ide_helper.php
+
+# Testing
+.phpunit.result.cache
+/coverage
+/dusk/screenshots/
+/dusk/console_logs/
+
+# Logs
+*.log
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Package Management
+composer.phar
+/auth.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Operating System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Development Files
+Homestead.json
+Homestead.yaml
+docker-compose.override.yml
+
+# Cache & Temporary
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+!/storage/framework/.gitkeep
+/storage/app/*
+!/storage/app/public/.gitkeep
+!/storage/app/private/.gitkeep
+
+# Miscellaneous
+.env.*.php
+*.pid
+*.seed
+*.pid.lock
+.cache/
+.tmp/
