@@ -14,14 +14,13 @@ return new class extends Migration
         Schema::create('garments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('title');
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->string('category')->nullable();
-            $table->string('brand')->nullable();
-            $table->string('size')->nullable();
-            $table->string('color')->nullable();
-            $table->string('condition')->nullable();
-            $table->string('status')->default('available');
+            $table->decimal('price', 10, 2);
+            $table->string('category')->nullable()->index();
+            $table->string('size')->nullable()->index();
+            $table->string('color')->nullable()->index();
+            $table->string('status')->default('available')->index();
             $table->timestamps();
         });
     }

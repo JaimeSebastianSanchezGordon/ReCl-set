@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GarmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,12 @@ Route::get('/me', function (Request $request) {
         'user' => $request->user(),
     ]);
 });
+
+// API: Mis prendas
+Route::get('my-garments', [GarmentController::class, 'myGarments'])->name('api.garments.my');
+
+// API: Cambio de estado
+Route::patch('garments/{garment}/status', [GarmentController::class, 'updateStatus'])->name('api.garments.updateStatus');
+
+// API: CRUD estándar
+Route::apiResource('garments', GarmentController::class);
