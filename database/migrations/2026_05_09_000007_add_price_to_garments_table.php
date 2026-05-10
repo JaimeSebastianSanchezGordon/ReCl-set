@@ -12,17 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('garments', function (Blueprint $table) {
-            $table->decimal('price', 10, 2)->nullable()->after('description');
-        });
-
-        DB::table('garments')
-            ->whereNull('price')
-            ->update(['price' => 0]);
-
-        Schema::table('garments', function (Blueprint $table) {
-            $table->decimal('price', 10, 2)->nullable(false)->change();
-        });
+        // Esta columna ya existe en la migración de creación de la tabla garments.
     }
 
     /**
@@ -30,8 +20,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('garments', function (Blueprint $table) {
-            $table->dropColumn('price');
-        });
+        // No se requiere ninguna acción en el rollback.
     }
 };

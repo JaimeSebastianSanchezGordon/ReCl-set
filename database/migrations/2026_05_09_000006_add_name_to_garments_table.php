@@ -12,18 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('garments', function (Blueprint $table) {
-            $table->string('name')->nullable()->after('user_id');
-        });
-
-        DB::table('garments')
-            ->whereNull('name')
-            ->update(['name' => DB::raw('title')]);
-
-        Schema::table('garments', function (Blueprint $table) {
-            $table->string('name')->nullable(false)->change();
-            $table->dropColumn('title');
-        });
+        // Esta migración ya no es necesaria porque la tabla garments
+        // se crea con la columna `name` desde el principio.
     }
 
     /**
@@ -31,17 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('garments', function (Blueprint $table) {
-            $table->string('title')->nullable()->after('user_id');
-        });
-
-        DB::table('garments')
-            ->whereNull('title')
-            ->update(['title' => DB::raw('name')]);
-
-        Schema::table('garments', function (Blueprint $table) {
-            $table->string('title')->nullable(false)->change();
-            $table->dropColumn('name');
-        });
+        // No hay acción necesaria en el rollback de esta migración.
     }
 };

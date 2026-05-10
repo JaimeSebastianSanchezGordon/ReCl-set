@@ -43,7 +43,34 @@
                         </a>
                     </nav>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    @auth
+                        <span class="hidden text-sm font-medium text-stone-500 sm:inline">
+                            {{ auth()->user()->name }}
+                        </span>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                class="rounded-md border border-stone-200 bg-white px-3 py-2 text-sm font-semibold text-stone-700 shadow-sm transition hover:border-stone-300 hover:bg-stone-50"
+                                type="submit"
+                            >
+                                Cerrar sesion
+                            </button>
+                        </form>
+                    @else
+                        <a
+                            class="rounded-md px-3 py-2 text-sm font-semibold text-stone-600 transition hover:bg-stone-100 hover:text-stone-800"
+                            href="{{ route('login') }}"
+                        >
+                            Iniciar sesion
+                        </a>
+                        <a
+                            class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                            href="{{ route('register') }}"
+                        >
+                            Registrarse
+                        </a>
+                    @endauth
                     @yield('actions')
                 </div>
             </header>

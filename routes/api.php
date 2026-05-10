@@ -19,11 +19,8 @@ Route::get('/me', function (Request $request) {
     ]);
 });
 
-// API: Mis prendas
-Route::get('my-garments', [GarmentController::class, 'myGarments'])->name('api.garments.my');
-
-// API: Cambio de estado
-Route::patch('garments/{garment}/status', [GarmentController::class, 'updateStatus'])->name('api.garments.updateStatus');
-
-// API: CRUD estándar
-Route::apiResource('garments', GarmentController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('my-garments', [GarmentController::class, 'myGarments'])->name('api.garments.my');
+    Route::patch('garments/{garment}/status', [GarmentController::class, 'updateStatus'])->name('api.garments.updateStatus');
+    Route::apiResource('garments', GarmentController::class)->names('api.garments');
+});

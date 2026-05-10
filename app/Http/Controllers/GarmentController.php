@@ -20,8 +20,7 @@ class GarmentController extends Controller
     */
     private function currentUserId(Request $request): ?int
     {
-        // TODO: reemplazar fallback cuando auth esté integrado
-        return $request->user()?->id ?? 1;
+        return $request->user()?->id;
     }
 
     /*
