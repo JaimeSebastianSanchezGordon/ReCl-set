@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GarmentController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +39,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/prendas/{garment}', [GarmentController::class, 'update'])->name('garments.update');
     Route::delete('/prendas/{garment}', [GarmentController::class, 'destroy'])->name('garments.destroy');
     Route::patch('/prendas/{garment}/estado', [GarmentController::class, 'updateStatus'])->name('garments.updateStatus');
+
+    // Rutas del Chat en tiempo real
+    Route::get('/mensajes', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/mensajes/iniciar/{garment}', [ChatController::class, 'start'])->name('chat.start');
+    Route::get('/mensajes/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/mensajes/{conversation}', [ChatController::class, 'storeMessage'])->name('chat.message.store');
 });
 
 Route::get('/prendas/{garment}', [GarmentController::class, 'show'])->name('garments.show');

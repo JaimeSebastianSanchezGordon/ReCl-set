@@ -41,6 +41,17 @@
                         >
                             Mis Prendas
                         </a>
+                        @auth
+                        <a
+                            href="{{ route('chat.index') }}"
+                            class="rounded-lg px-3 py-2 text-sm font-medium transition
+                                {{ request()->routeIs('chat.index') || request()->routeIs('chat.show')
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800' }}"
+                        >
+                            Mensajes
+                        </a>
+                        @endauth
                     </nav>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
