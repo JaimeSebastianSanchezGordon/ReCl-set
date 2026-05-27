@@ -23,11 +23,11 @@
 
     {{-- ===== Nombre ===== --}}
     <div class="grid gap-2">
-        <label class="text-sm font-medium text-stone-700" for="name">
-            Nombre <span class="text-rose-500">*</span>
+        <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="name">
+            Nombre de la prenda <span class="text-rose-500">*</span>
         </label>
         <input
-            class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+            class="rounded-xl border border-stone-250 bg-white/80 backdrop-blur-sm px-4 py-2.5 text-sm shadow-sm transition focus:border-[#5aa9e6] focus:ring-1 focus:ring-[#5aa9e6] focus:outline-none font-medium"
             id="name"
             name="name"
             type="text"
@@ -36,38 +36,38 @@
             maxlength="120"
             required
         >
-        <p class="text-xs text-stone-400">Mínimo 3, máximo 120 caracteres.</p>
+        <p class="text-[10px] text-stone-400 font-medium">Mínimo 3, máximo 120 caracteres.</p>
         @error('name')
-            <p class="text-xs text-rose-600">{{ $message }}</p>
+            <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
         @enderror
     </div>
 
     {{-- ===== Descripción ===== --}}
     <div class="grid gap-2">
-        <label class="text-sm font-medium text-stone-700" for="description">Descripción</label>
+        <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="description">Descripción</label>
         <textarea
-            class="min-h-[120px] rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+            class="min-h-[120px] rounded-xl border border-stone-250 bg-white/80 backdrop-blur-sm px-4 py-2.5 text-sm shadow-sm transition focus:border-[#5aa9e6] focus:ring-1 focus:ring-[#5aa9e6] focus:outline-none font-medium"
             id="description"
             name="description"
             placeholder="Describe la prenda, su estado, material..."
             maxlength="1000"
         >{{ old('description', $garment?->description ?? '') }}</textarea>
-        <p class="text-xs text-stone-400">Máximo 1000 caracteres.</p>
+        <p class="text-[10px] text-stone-400 font-medium">Máximo 1000 caracteres.</p>
         @error('description')
-            <p class="text-xs text-rose-600">{{ $message }}</p>
+            <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
         @enderror
     </div>
 
     {{-- ===== Precio + Status (condicional) ===== --}}
     <div class="grid gap-6 {{ $isEdit ? 'sm:grid-cols-2' : 'sm:grid-cols-1' }}">
         <div class="grid gap-2">
-            <label class="text-sm font-medium text-stone-700" for="price">
+            <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="price">
                 Precio (USD) <span class="text-rose-500">*</span>
             </label>
             <div class="relative">
-                <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">$</span>
+                <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-stone-400">$</span>
                 <input
-                    class="w-full rounded-md border border-stone-300 bg-white pl-7 pr-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                    class="w-full rounded-xl border border-stone-250 bg-white/80 backdrop-blur-sm pl-8 pr-4 py-2.5 text-sm shadow-sm transition focus:border-[#5aa9e6] focus:ring-1 focus:ring-[#5aa9e6] focus:outline-none font-medium"
                     id="price"
                     name="price"
                     step="0.01"
@@ -78,20 +78,20 @@
                     required
                 >
             </div>
-            <p class="text-xs text-stone-400">Valor positivo, máximo 2 decimales.</p>
+            <p class="text-[10px] text-stone-400 font-medium">Valor positivo, máximo 2 decimales.</p>
             @error('price')
-                <p class="text-xs text-rose-600">{{ $message }}</p>
+                <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
             @enderror
         </div>
 
         {{-- Status — SOLO en edición --}}
         @if ($isEdit)
             <div class="grid gap-2">
-                <label class="text-sm font-medium text-stone-700" for="status">
-                    Estado <span class="text-rose-500">*</span>
+                <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="status">
+                    Estado de disponibilidad <span class="text-rose-500">*</span>
                 </label>
                 <select
-                    class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                    class="rounded-full border border-stone-200 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5aa9e6] cursor-pointer"
                     id="status"
                     name="status"
                     required
@@ -106,22 +106,22 @@
                     @endforeach
                 </select>
                 @error('status')
-                    <p class="text-xs text-rose-600">{{ $message }}</p>
+                    <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
                 @enderror
             </div>
         @endif
     </div>
 
-    {{-- ===== Categoría / Talla / Color (selectores cerrados) ===== --}}
+    {{-- ===== Categoría / Talla / Color ===== --}}
     <div class="grid gap-6 sm:grid-cols-3">
 
         {{-- Categoría --}}
         <div class="grid gap-2">
-            <label class="text-sm font-medium text-stone-700" for="category">
+            <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="category">
                 Categoría <span class="text-rose-500">*</span>
             </label>
             <select
-                class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                class="rounded-full border border-stone-200 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5aa9e6] cursor-pointer"
                 id="category"
                 name="category"
                 required
@@ -137,17 +137,17 @@
                 @endforeach
             </select>
             @error('category')
-                <p class="text-xs text-rose-600">{{ $message }}</p>
+                <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
             @enderror
         </div>
 
         {{-- Talla --}}
         <div class="grid gap-2">
-            <label class="text-sm font-medium text-stone-700" for="size">
+            <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="size">
                 Talla <span class="text-rose-500">*</span>
             </label>
             <select
-                class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                class="rounded-full border border-stone-200 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5aa9e6] cursor-pointer"
                 id="size"
                 name="size"
                 required
@@ -163,17 +163,17 @@
                 @endforeach
             </select>
             @error('size')
-                <p class="text-xs text-rose-600">{{ $message }}</p>
+                <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
             @enderror
         </div>
 
         {{-- Color --}}
         <div class="grid gap-2">
-            <label class="text-sm font-medium text-stone-700" for="color">
+            <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="color">
                 Color <span class="text-rose-500">*</span>
             </label>
             <select
-                class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                class="rounded-full border border-stone-200 bg-white px-4 py-2.5 text-xs font-bold text-stone-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5aa9e6] cursor-pointer"
                 id="color"
                 name="color"
                 required
@@ -189,34 +189,34 @@
                 @endforeach
             </select>
             @error('color')
-                <p class="text-xs text-rose-600">{{ $message }}</p>
+                <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
             @enderror
         </div>
     </div>
 
     {{-- ===== Imagen ===== --}}
     <div class="grid gap-2">
-        <label class="text-sm font-medium text-stone-700" for="image">Imagen</label>
+        <label class="text-xs font-bold text-stone-700 uppercase tracking-wider" for="image">Fotografía</label>
         @if ($isEdit && $garment?->image_path)
             <div class="mb-2">
                 <img
                     src="{{ asset('storage/' . $garment->image_path) }}"
                     alt="{{ $garment->name }}"
-                    class="h-32 w-32 rounded-lg border border-stone-200 object-cover shadow-sm"
+                    class="h-32 w-32 rounded-2xl border border-stone-200 object-cover shadow-md"
                 >
-                <p class="mt-1 text-xs text-stone-400">Sube una nueva imagen para reemplazar la actual.</p>
+                <p class="mt-1.5 text-[10px] text-stone-400 font-medium">Sube una nueva imagen para reemplazar la actual.</p>
             </div>
         @endif
         <input
-            class="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm shadow-sm file:mr-3 file:rounded-md file:border-0 file:bg-emerald-50 file:px-3 file:py-1 file:text-sm file:font-medium file:text-emerald-700 transition focus:border-emerald-500 focus:outline-none"
+            class="rounded-xl border border-stone-250 bg-white/80 backdrop-blur-sm px-4 py-2.5 text-sm shadow-sm file:mr-3 file:rounded-xl file:border-0 file:bg-[#5aa9e6]/10 file:px-4 file:py-1.5 file:text-xs file:font-bold file:text-[#2974a6] transition focus:border-[#5aa9e6] focus:outline-none"
             id="image"
             name="image"
             type="file"
             accept="image/jpeg,image/png,image/webp"
         >
-        <p class="text-xs text-stone-400">JPG, PNG o WebP. Máximo 2 MB.</p>
+        <p class="text-[10px] text-stone-400 font-medium">Formatos soportados: JPG, PNG o WebP. Tamaño máximo de archivo: 2 MB.</p>
         @error('image')
-            <p class="text-xs text-rose-600">{{ $message }}</p>
+            <p class="text-xs text-rose-600 font-bold mt-1">{{ $message }}</p>
         @enderror
     </div>
 </div>

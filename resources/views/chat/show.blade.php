@@ -19,195 +19,306 @@
     }
 </style>
 
-<div class="mx-auto max-w-4xl flex flex-col h-[calc(100vh-12rem)] min-h-[500px]">
+<div class="w-full">
     {{-- ===== Botón de regreso y barra de título ===== --}}
     <div class="mb-4 flex items-center justify-between">
-        <a class="text-sm font-bold text-stone-600 hover:text-stone-850 transition flex items-center gap-1.5" href="{{ route('chat.index') }}">
+        <a class="text-sm font-bold text-stone-600 hover:text-stone-850 transition flex items-center gap-1.5 cursor-pointer" href="{{ route('chat.index') }}">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
             Volver a Conversaciones
         </a>
-        <span class="text-xs text-stone-400 font-semibold bg-stone-100/80 rounded-lg px-2 py-1">Sala de Negociación</span>
+        <span class="text-xs text-stone-400 font-semibold bg-stone-100/80 rounded-lg px-2.5 py-1 inline-flex items-center gap-1.5 border border-stone-200">
+            <span class="relative flex h-1.5 w-1.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-450 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            Negociación Activa
+        </span>
     </div>
 
-    {{-- ===== Contenedor principal de Chat ===== --}}
-    <div class="flex flex-1 flex-col overflow-hidden rounded-3xl border border-stone-200/80 bg-white shadow-xl shadow-stone-100/40">
+    {{-- ===== Grid Dividido Responsivo ===== --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-14rem)] min-h-[550px] relative z-10">
         
-        {{-- Cabecera: Info de la prenda, el otro usuario y eliminar chat --}}
-        @php
-            $otherUser = $conversation->getOtherUser(auth()->user());
-            $garment = $conversation->garment;
-        @endphp
-        <div class="border-b border-stone-150 bg-stone-50/70 p-4">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                
-                {{-- Info del participante --}}
-                <div class="flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-550 to-emerald-700 font-bold text-white shadow-md shadow-emerald-600/10">
-                        {{ substr($otherUser->name, 0, 1) }}
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-extrabold text-stone-900">{{ $otherUser->name }}</h3>
-                        <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="relative flex h-1.5 w-1.5">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-450 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                            </span>
-                            <span class="text-[11px] text-stone-400 font-semibold">En línea para negociar</span>
-                        </div>
-                    </div>
-                </div>
+        {{-- Columna Izquierda: Listado de conversaciones (oculto en móvil para dar espacio al chat activo) --}}
+        <div class="hidden md:flex md:col-span-1 flex-col h-full bg-white/80 backdrop-blur-md border border-stone-200/80 rounded-3xl shadow-xl shadow-stone-100/30 overflow-hidden">
+            <div class="p-4 border-b border-stone-100 bg-stone-50/50 flex justify-between items-center">
+                <span class="text-sm font-bold text-stone-850 inline-flex items-center gap-1.5">
+                    <svg class="h-4.5 w-4.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                    Bandeja de Entrada
+                </span>
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                    {{ count($conversations) }}
+                </span>
+            </div>
 
-                {{-- Mini Ficha de la Prenda --}}
-                <div class="flex items-center gap-2">
-                    @if ($garment)
-                        <a
-                            href="{{ route('garments.show', $garment) }}"
-                            class="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-3 py-2 text-left hover:border-stone-300 hover:shadow-sm transition shrink-0 max-w-[280px]"
-                        >
-                            <div class="h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-stone-100 flex items-center justify-center border border-stone-100">
-                                @if ($garment->image_path)
-                                    <img
-                                        src="{{ asset('storage/' . $garment->image_path) }}"
-                                        alt="{{ $garment->name }}"
-                                        class="h-full w-full object-cover"
-                                    >
-                                @else
-                                    <svg class="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
-                                    </svg>
-                                @endif
-                            </div>
-                            <div class="min-w-0 pr-1">
-                                <h4 class="text-xs font-bold text-stone-900 truncate leading-tight">{{ $garment->name }}</h4>
-                                <p class="text-[10px] font-bold text-emerald-700 mt-0.5">
-                                    ${{ number_format((float) $garment->price, 2) }}
-                                    <span class="mx-1 text-stone-300 font-normal">|</span>
-                                    <span class="font-bold text-[9px]">
-                                        {{ $garment->statusLabel() }}
-                                    </span>
-                                </p>
-                            </div>
-                        </a>
-                    @else
-                        <div class="text-[11px] italic text-stone-400 bg-stone-100 rounded-xl px-3 py-2 border border-stone-150">
-                            Prenda no disponible
-                        </div>
-                    @endif
-
-                    {{-- Botón de eliminar chat --}}
-                    <button
-                        type="button"
-                        onclick="toggleDeleteModal(true)"
-                        class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-stone-400 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition duration-200"
-                        title="Eliminar esta conversación"
+            <div class="flex-1 overflow-y-auto divide-y divide-stone-100">
+                @foreach ($conversations as $conv)
+                    @php
+                        $convOtherUser = $conv->getOtherUser(auth()->user());
+                        $convGarment = $conv->garment;
+                        $convLastMessage = $conv->messages()->orderByDesc('created_at')->first();
+                        $convIsUnread = $convLastMessage && $convLastMessage->user_id !== auth()->id() && !$convLastMessage->read_at;
+                        $isActive = $conv->id === $conversation->id;
+                    @endphp
+                    <div
+                        class="group block p-4 hover:bg-[#5aa9e6]/5 transition duration-200 relative {{ $convIsUnread ? 'bg-[#5aa9e6]/5' : '' }} {{ $isActive ? 'bg-[#7fc8f8]/10 border-l-4 border-[#5aa9e6]' : '' }}"
                     >
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                        </svg>
-                    </button>
-                </div>
+                        <div class="flex items-center gap-3">
+                            <a
+                                href="{{ route('chat.show', $conv) }}"
+                                class="flex flex-1 items-center gap-3 min-w-0"
+                            >
+                                <div class="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 flex items-center justify-center shadow-sm">
+                                    @if ($convGarment && $convGarment->image_path)
+                                        <img
+                                            src="{{ asset('storage/' . $convGarment->image_path) }}"
+                                            alt="{{ $convGarment->name }}"
+                                            class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                                        >
+                                    @else
+                                        <svg class="h-6 w-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                                        </svg>
+                                    @endif
+                                </div>
+
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-baseline justify-between gap-1">
+                                        <h4 class="text-xs font-bold text-stone-900 group-hover:text-emerald-700 transition truncate">
+                                            {{ $convOtherUser->name }}
+                                        </h4>
+                                        <span class="text-[10px] text-stone-400 shrink-0 font-medium">
+                                            {{ $conv->last_message_at ? $conv->last_message_at->diffForHumans(null, true) : $conv->created_at->diffForHumans(null, true) }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-1 mt-0.5 text-[10px] font-bold text-emerald-800 truncate">
+                                        <span>{{ $convGarment ? $convGarment->name : 'Prenda eliminada' }}</span>
+                                        @if($convGarment)
+                                            <span class="h-0.5 w-0.5 rounded-full bg-stone-300 shrink-0"></span>
+                                            <span class="bg-emerald-50 px-1 py-0.2 rounded text-emerald-700 font-bold">${{ number_format((float) $convGarment->price, 2) }}</span>
+                                        @endif
+                                    </div>
+                                    
+                                    <p class="mt-1 text-xs text-stone-500 truncate leading-relaxed {{ $convIsUnread ? 'font-bold text-stone-850' : '' }}">
+                                        @if ($convLastMessage)
+                                            @if ($convLastMessage->user_id === auth()->id())
+                                                <span class="text-stone-400 font-normal">Tú:</span>
+                                            @endif
+                                            {{ $convLastMessage->body }}
+                                        @else
+                                            <span class="italic text-stone-400/90 font-normal">Conversación iniciada.</span>
+                                        @endif
+                                    </p>
+                                </div>
+                            </a>
+
+                            <div class="flex items-center gap-1 shrink-0">
+                                @if ($convIsUnread)
+                                    <span class="relative flex h-2 w-2 mr-1">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                                    </span>
+                                @endif
+
+                                <button
+                                    type="button"
+                                    onclick="confirmDeleteChat('{{ route('chat.destroy', $conv) }}', '{{ addslashes($convOtherUser->name) }}', '{{ $convGarment ? addslashes($convGarment->name) : 'Prenda eliminada' }}')"
+                                    class="md:opacity-0 group-hover:opacity-100 inline-flex h-8 w-8 items-center justify-center rounded-xl text-stone-400 hover:bg-rose-50 hover:text-rose-600 transition duration-200 cursor-pointer"
+                                    title="Eliminar conversación"
+                                >
+                                    <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 
-        {{-- Área de Mensajes --}}
-        <div
-            id="messages-container"
-            class="flex-1 overflow-y-auto bg-stone-50/50 p-5 space-y-4 flex flex-col"
-        >
-            @if ($messages->isEmpty())
-                <div id="no-messages-prompt" class="my-auto text-center p-8">
-                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-inner">
-                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641l-.318 1.235c-.027.106-.006.218.056.303A.358.358 0 0 0 5.897 21c.3 0 .591-.072.859-.21l1.75-.905c.148-.077.307-.104.468-.105 1.018.15 2.072.22 3.149.22H12Z" />
-                        </svg>
+        {{-- Columna Derecha: Sala de Chat activa --}}
+        <div class="md:col-span-2 flex flex-col h-full bg-white/80 backdrop-blur-md border border-stone-200/80 rounded-3xl shadow-xl shadow-stone-100/30 overflow-hidden">
+            @php
+                $otherUser = $conversation->getOtherUser(auth()->user());
+                $garment = $conversation->garment;
+            @endphp
+            
+            {{-- Cabecera del chat --}}
+            <div class="border-b border-stone-150 bg-stone-50/70 p-4">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    
+                    {{-- Info del participante --}}
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-[#5aa9e6] font-bold text-white shadow-md shadow-emerald-600/10">
+                            {{ substr($otherUser->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-extrabold text-stone-900">{{ $otherUser->name }}</h3>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="relative flex h-1.5 w-1.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-450 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                                </span>
+                                <span class="text-[11px] text-stone-400 font-semibold">En línea para negociar</span>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="mt-4 text-base font-bold text-stone-900">¡Inicia la conversación!</h4>
-                    <p class="mt-2 text-xs text-stone-450 leading-relaxed max-w-xs mx-auto">
-                        Hazle una pregunta a {{ $otherUser->name }} sobre su prenda para resolver cualquier duda.
-                    </p>
-                </div>
-            @else
-                @php
-                    $lastDate = null;
-                @endphp
-                @foreach ($messages as $message)
-                    @php
-                        $isMe = (int) $message->user_id === (int) auth()->id();
-                        
-                        // Generar cabeceras de fecha premium
-                        $messageDate = $message->created_at->format('Y-m-d');
-                        $dateLabel = '';
-                        if ($lastDate !== $messageDate) {
-                            if ($message->created_at->isToday()) {
-                                $dateLabel = 'Hoy';
-                            } elseif ($message->created_at->isYesterday()) {
-                                $dateLabel = 'Ayer';
-                            } else {
-                                $dateLabel = $message->created_at->translatedFormat('j \d\e F, Y');
-                            }
-                            $lastDate = $messageDate;
-                        }
-                    @endphp
 
-                    @if ($dateLabel)
-                        <div class="flex justify-center my-2">
-                            <span class="rounded-full bg-stone-200/60 px-3 py-1 text-[10px] font-extrabold text-stone-500 uppercase tracking-wider">
-                                {{ $dateLabel }}
+                    {{-- Mini Ficha de la Prenda --}}
+                    <div class="flex items-center gap-2">
+                        @if ($garment)
+                            <a
+                                href="{{ route('garments.show', $garment) }}"
+                                class="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-3 py-2 text-left hover:border-[#5aa9e6]/50 hover:shadow-sm transition shrink-0 max-w-[280px]"
+                            >
+                                <div class="h-9 w-9 shrink-0 overflow-hidden rounded-lg bg-stone-100 flex items-center justify-center border border-stone-100">
+                                    @if ($garment->image_path)
+                                        <img
+                                            src="{{ asset('storage/' . $garment->image_path) }}"
+                                            alt="{{ $garment->name }}"
+                                            class="h-full w-full object-cover"
+                                        >
+                                    @else
+                                        <svg class="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div class="min-w-0 pr-1">
+                                    <h4 class="text-xs font-bold text-stone-900 truncate leading-tight">{{ $garment->name }}</h4>
+                                    <p class="text-[10px] font-bold text-emerald-700 mt-0.5">
+                                        ${{ number_format((float) $garment->price, 2) }}
+                                        <span class="mx-1 text-stone-300 font-normal">|</span>
+                                        <span class="font-bold text-[9px]">
+                                            {{ $garment->statusLabel() }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </a>
+                        @else
+                            <div class="text-[11px] italic text-stone-400 bg-stone-100 rounded-xl px-3 py-2 border border-stone-150">
+                                Prenda no disponible
+                            </div>
+                        @endif
+
+                        {{-- Botón de eliminar chat --}}
+                        <button
+                            type="button"
+                            onclick="toggleDeleteModal(true)"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-stone-200 bg-white text-stone-400 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition duration-200 cursor-pointer"
+                            title="Eliminar esta conversación"
+                        >
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Área de Mensajes --}}
+            <div
+                id="messages-container"
+                class="flex-1 overflow-y-auto bg-stone-50/50 p-5 space-y-4 flex flex-col"
+            >
+                @if ($messages->isEmpty())
+                    <div id="no-messages-prompt" class="my-auto text-center p-8">
+                        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#5aa9e6]/10 text-[#2974a6] shadow-inner">
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641l-.318 1.235c-.027.106-.006.218.056.303A.358.358 0 0 0 5.897 21c.3 0 .591-.072.859-.21l1.75-.905c.148-.077.307-.104.468-.105 1.018.15 2.072.22 3.149.22H12Z" />
+                            </svg>
+                        </div>
+                        <h4 class="mt-4 text-base font-bold text-stone-900">¡Inicia la conversación!</h4>
+                        <p class="mt-2 text-xs text-stone-450 leading-relaxed max-w-xs mx-auto">
+                            Hazle una pregunta a {{ $otherUser->name }} sobre su prenda para resolver cualquier duda.
+                        </p>
+                    </div>
+                @else
+                    @php
+                        $lastDate = null;
+                    @endphp
+                    @foreach ($messages as $message)
+                        @php
+                            $isMe = (int) $message->user_id === (int) auth()->id();
+                            
+                            // Generar cabeceras de fecha
+                            $messageDate = $message->created_at->format('Y-m-d');
+                            $dateLabel = '';
+                            if ($lastDate !== $messageDate) {
+                                if ($message->created_at->isToday()) {
+                                    $dateLabel = 'Hoy';
+                                } elseif ($message->created_at->isYesterday()) {
+                                    $dateLabel = 'Ayer';
+                                } else {
+                                    $dateLabel = $message->created_at->translatedFormat('j \d\e F, Y');
+                                }
+                                $lastDate = $messageDate;
+                            }
+                        @endphp
+
+                        @if ($dateLabel)
+                            <div class="flex justify-center my-2 shrink-0">
+                                <span class="rounded-full bg-stone-200/60 px-3 py-1 text-[10px] font-extrabold text-stone-500 uppercase tracking-wider">
+                                    {{ $dateLabel }}
+                                </span>
+                            </div>
+                        @endif
+
+                        <div class="flex flex-col {{ $isMe ? 'items-end' : 'items-start' }} shrink-0">
+                            <div class="max-w-[72%] rounded-2xl px-4 py-2.5 shadow-sm text-sm leading-relaxed
+                                {{ $isMe
+                                    ? 'bg-[#5aa9e6] text-white rounded-tr-none'
+                                    : 'bg-white text-stone-850 border border-stone-200/80 rounded-tl-none' }}"
+                            >
+                                <p class="whitespace-pre-line">{{ $message->body }}</p>
+                            </div>
+                            <span class="mt-1 text-[9px] text-stone-400 font-medium px-1.5">
+                                {{ $message->created_at->format('H:i') }}
                             </span>
                         </div>
-                    @endif
+                    @endforeach
+                @endif
+            </div>
 
-                    <div class="flex flex-col {{ $isMe ? 'items-end' : 'items-start' }}">
-                        <div class="max-w-[72%] rounded-2xl px-4 py-2.5 shadow-sm text-sm leading-relaxed
-                            {{ $isMe
-                                ? 'bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-tr-none shadow-emerald-600/5'
-                                : 'bg-white text-stone-850 border border-stone-200/80 rounded-tl-none' }}"
-                        >
-                            <p class="whitespace-pre-line">{{ $message->body }}</p>
-                        </div>
-                        <span class="mt-1 text-[9px] text-stone-400 font-medium px-1.5">
-                            {{ $message->created_at->format('H:i') }}
-                        </span>
-                    </div>
-                @endforeach
-            @endif
-        </div>
-
-        {{-- Formulario para Enviar Mensaje --}}
-        <div class="border-t border-stone-150 bg-white p-4">
-            <form
-                id="chat-form"
-                method="POST"
-                action="{{ route('chat.message.store', $conversation) }}"
-                class="flex items-center gap-2"
-            >
-                @csrf
-                <input
-                    type="text"
-                    name="body"
-                    id="message-input"
-                    placeholder="Preguntar al vendedor..."
-                    required
-                    autocomplete="off"
-                    class="flex-1 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-sm text-stone-900 placeholder-stone-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
+            {{-- Formulario para Enviar Mensaje --}}
+            <div class="border-t border-stone-150 bg-white p-4">
+                <form
+                    id="chat-form"
+                    method="POST"
+                    action="{{ route('chat.message.store', $conversation) }}"
+                    class="flex items-center gap-2"
                 >
-                <button
-                    type="submit"
-                    id="send-button"
-                    class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/10 transition hover:bg-emerald-700 hover:shadow-emerald-750/20 active:scale-95 focus:outline-none"
-                >
-                    <svg class="h-5.5 w-5.5 rotate-90 transform" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
-                    </svg>
-                </button>
-            </form>
+                    @csrf
+                    <input
+                        type="text"
+                        name="body"
+                        id="message-input"
+                        placeholder="Preguntar al vendedor..."
+                        required
+                        autocomplete="off"
+                        class="flex-1 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3.5 text-sm text-stone-900 placeholder-stone-400 focus:border-[#5aa9e6] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5aa9e6] transition duration-150"
+                    >
+                    <button
+                        type="submit"
+                        id="send-button"
+                        class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-md shadow-emerald-600/10 transition hover:bg-emerald-700 hover:shadow-emerald-750/20 active:scale-95 focus:outline-none cursor-pointer"
+                    >
+                        <svg class="h-5.5 w-5.5 rotate-90 transform" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
-{{-- ===== Modal de confirmación de eliminación (específico de la sala) ===== --}}
+{{-- ===== Modal de confirmación de eliminación ===== --}}
 <div
     id="delete-chat-modal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity duration-300"
@@ -233,7 +344,7 @@
         <div class="mt-2 flex items-center justify-end gap-3">
             <button
                 type="button"
-                class="rounded-xl px-4 py-2.5 text-sm font-semibold text-stone-600 hover:bg-stone-50 hover:text-stone-800 transition active:scale-95"
+                class="rounded-xl px-4 py-2.5 text-sm font-semibold text-stone-600 hover:bg-stone-50 hover:text-stone-800 transition active:scale-95 cursor-pointer"
                 onclick="toggleDeleteModal(false)"
             >
                 Cancelar
@@ -243,8 +354,11 @@
                 @method('DELETE')
                 <button
                     type="submit"
-                    class="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-rose-600/10 transition hover:bg-rose-700 hover:shadow-rose-750/20 active:scale-95"
+                    class="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-rose-600/10 transition hover:bg-rose-700 hover:shadow-rose-750/20 active:scale-95 cursor-pointer gap-1.5"
                 >
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                    </svg>
                     Sí, eliminar
                 </button>
             </form>
@@ -291,19 +405,19 @@
 
         scrollToBottom();
 
-        // --- Agregar mensaje al DOM con animación premium y chequeo de agrupaciones ---
+        // --- Agregar mensaje al DOM ---
         function appendMessage(body, formattedTime, isMe, senderName) {
             if (noMessagesPrompt) {
                 noMessagesPrompt.remove();
             }
 
             const messageDiv = document.createElement('div');
-            messageDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-fade-in-up`;
+            messageDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-fade-in-up shrink-0`;
 
             messageDiv.innerHTML = `
                 <div class="max-w-[72%] rounded-2xl px-4 py-2.5 shadow-sm text-sm leading-relaxed
                     ${isMe
-                        ? 'bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-tr-none shadow-emerald-600/5'
+                        ? 'bg-[#5aa9e6] text-white rounded-tr-none'
                         : 'bg-white text-stone-850 border border-stone-200/80 rounded-tl-none'}"
                 >
                     <p class="whitespace-pre-line">${escapeHtml(body)}</p>
@@ -375,7 +489,7 @@
             });
         });
 
-        // --- Laravel Echo: Escuchar en tiempo real a través de WebSockets ---
+        // --- Laravel Echo: Escuchar en tiempo real ---
         if (window.Echo) {
             window.Echo.private(`conversations.${conversationId}`)
                 .listen('MessageSent', (e) => {

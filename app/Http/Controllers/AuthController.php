@@ -150,8 +150,7 @@ class AuthController extends Controller
         }
 
         return redirect()
-            ->intended(route('garments.my'))
-            ->with('status', 'Sesion iniciada correctamente.');
+            ->intended(route('garments.my'));
     }
 
     public function logout(Request $request)
@@ -166,7 +165,6 @@ class AuthController extends Controller
         }
 
         return redirect()
-            ->route('garments.explore')
-            ->with('status', 'Sesion cerrada correctamente.');
+            ->route('garments.explore');
     }
 }

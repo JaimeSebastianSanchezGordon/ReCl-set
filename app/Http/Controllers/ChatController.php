@@ -92,7 +92,14 @@ class ChatController extends Controller
         $conversation->load(['garment', 'creator', 'recipient']);
         $messages = $conversation->messages()->with('user')->orderBy('created_at', 'asc')->get();
 
-        return view('chat.show', compact('conversation', 'messages'));
+        // Cargar también todas las conversaciones del usuario para la columna izquierda
+        $conversations = Conversation::with(['garment', 'creator', 'recipient'])
+            ->where('creator_user_id', $user->id)
+            ->orWhere('recipient_user_id', $user->id)
+            ->orderByDesc('last_message_at')
+            ->get();
+
+        return view('chat.show', compact('conversation', 'messages', 'conversations'));
     }
 
     /**
