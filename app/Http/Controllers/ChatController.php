@@ -145,4 +145,31 @@ class ChatController extends Controller
 
         return redirect()->route('chat.show', $conversation);
     }
+
+    /**
+     * Elimina una conversación y sus mensajes asociados.
+     */
+    public function destroy(Request $request, Conversation $conversation)
+    {
+        $user = $request->user();
+
+        // Validar participación en el chat
+        if ((int) $user->id !== (int) $conversation->creator_user_id && (int) $user->id !== (int) $conversation->recipient_user_id) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'No autorizado.'], Response::HTTP_FORBIDDEN);
+            }
+            abort(403, 'No autorizado.');
+        }
+
+        // Eliminar de la base de datos (mensajes se borrarán por cascada en la BD)
+        $conversation->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Conversación eliminada.']);
+        }
+
+        return redirect()
+            ->route('chat.index')
+            ->with('status', 'Conversación eliminada correctamente.');
+    }
 }

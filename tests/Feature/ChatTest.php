@@ -194,4 +194,44 @@ class ChatTest extends TestCase
 
         Event::assertDispatched(MessageSent::class);
     }
+
+    public function test_user_can_delete_conversation(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $intruder = User::factory()->create();
+
+        $garment = Garment::create([
+            'user_id' => $seller->id,
+            'name' => 'Camisa de Luis',
+            'price' => '15.00',
+            'category' => 'tops',
+            'size' => 'm',
+            'color' => 'white',
+            'status' => 'available',
+        ]);
+
+        $conversation = Conversation::create([
+            'garment_id' => $garment->id,
+            'creator_user_id' => $buyer->id,
+            'recipient_user_id' => $seller->id,
+            'last_message_at' => now(),
+        ]);
+
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $buyer->id,
+            'body' => 'Hola Luis',
+        ]);
+
+        // Intruso no puede eliminar
+        $this->actingAs($intruder)->delete("/mensajes/{$conversation->id}")->assertStatus(403);
+        $this->assertEquals(1, Conversation::count());
+
+        // Comprador sí puede eliminar
+        $response = $this->actingAs($buyer)->delete("/mensajes/{$conversation->id}");
+        $response->assertRedirect(route('chat.index'));
+        $this->assertEquals(0, Conversation::count());
+        $this->assertEquals(0, Message::count()); // Cascada
+    }
 }

@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/mensajes/iniciar/{garment}', [ChatController::class, 'start'])->name('chat.start');
     Route::get('/mensajes/{conversation}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/mensajes/{conversation}', [ChatController::class, 'storeMessage'])->name('chat.message.store');
+    Route::delete('/mensajes/{conversation}', [ChatController::class, 'destroy'])->name('chat.destroy');
 });
 
 Route::get('/prendas/{garment}', [GarmentController::class, 'show'])->name('garments.show');
