@@ -28,7 +28,6 @@
             </svg>
             Volver a Mensajes
         </a>
-        <span class="text-xs text-stone-400">ID de Chat: #{{ $conversation->id }}</span>
     </div>
 
     {{-- ===== Contenedor principal de Chat ===== --}}
@@ -108,21 +107,74 @@
                     </p>
                 </div>
             @else
-                @foreach ($messages as $message)
+                @foreach ($messages as $index => $message)
                     @php
                         $isMe = (int) $message->user_id === (int) auth()->id();
+
+                        $previousMessage = $messages[$index - 1] ?? null;
+                        $nextMessage = $messages[$index + 1] ?? null;
+
+                        $isSameAsPrevious =
+                            $previousMessage &&
+                            (int) $previousMessage->user_id === (int) $message->user_id;
+
+                        $isSameAsNext =
+                            $nextMessage &&
+                            (int) $nextMessage->user_id === (int) $message->user_id;
+
+                        // separación entre bloques
+                        $spacingClass = $isSameAsPrevious ? 'mt-1' : 'mt-5';
+
+                        // mostrar badge SOLO al inicio del bloque
+                        $showBadge = !$isSameAsPrevious;
+
+                        $formattedTime = $message->created_at
+                            ->timezone('America/Guayaquil')
+                            ->format('H:i');
                     @endphp
-                    <div class="flex flex-col {{ $isMe ? 'items-end' : 'items-start' }}">
-                        <div class="max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm text-sm
-                            {{ $isMe
-                                ? 'bg-emerald-600 text-white rounded-tr-none'
-                                : 'bg-white text-stone-800 border border-stone-150 rounded-tl-none' }}"
-                        >
-                            <p class="leading-relaxed whitespace-pre-line">{{ $message->body }}</p>
+
+                    {{-- Badge centrado --}}
+                    @if ($showBadge)
+                        <div class="flex justify-center mt-4 mb-2">
+                            <div
+                                class="px-3 py-1 rounded-full
+                                bg-stone-200/70 text-stone-500
+                                text-[7px] font-medium
+                                backdrop-blur-sm"
+                            >
+                                {{ $formattedTime }}
+                            </div>
                         </div>
-                        <span class="mt-1 text-[10px] text-stone-400 px-1">
-                            {{ $isMe ? 'Tú' : $message->user->name }} • {{ $message->created_at->format('H:i') }}
-                        </span>
+                    @endif
+
+                    <div class="flex flex-col {{ $isMe ? 'items-end' : 'items-start' }} {{ $spacingClass }}">
+                        <div
+                            class="max-w-[75%] px-4 py-2.5 shadow-sm text-sm
+                            {{ $isMe
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-white text-stone-800 border border-stone-200' }}
+
+                            {{ !$isSameAsPrevious
+                                ? ($isMe
+                                    ? 'rounded-2xl rounded-br-md'
+                                    : 'rounded-2xl rounded-bl-md')
+                                : '' }}
+
+                            {{ $isSameAsPrevious
+                                ? 'rounded-2xl'
+                                : '' }}
+
+                            {{ !$isSameAsNext
+                                ? ($isMe
+                                    ? 'rounded-tr-none'
+                                    : 'rounded-tl-none')
+                                : '' }}
+                            "
+                        >
+                            <p class="leading-relaxed whitespace-pre-line">
+                                {{ $message->body }}
+                            </p>
+                        </div>
                     </div>
                 @endforeach
             @endif
