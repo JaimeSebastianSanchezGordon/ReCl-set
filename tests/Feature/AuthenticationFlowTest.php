@@ -4,7 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Garment;
 use App\Models\User;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class AuthenticationFlowTest extends TestCase
@@ -101,6 +104,53 @@ class AuthenticationFlowTest extends TestCase
         $this->get('/mis-prendas')->assertRedirect(route('login'));
         $this->get('/prendas/crear')->assertRedirect(route('login'));
         $this->post('/prendas', $this->garmentPayload('Prenda sin usuario'))->assertRedirect(route('login'));
+    }
+
+    public function test_user_can_request_and_reset_password(): void
+    {
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'email' => 'reset@example.com',
+            'password' => Hash::make('old-password123'),
+        ]);
+
+        $this->get('/olvide-contrasena')
+            ->assertOk()
+            ->assertSee('Recuperar contrasena');
+
+        $this->post('/olvide-contrasena', [
+            'email' => $user->email,
+        ])->assertSessionHas('status');
+
+        $token = null;
+        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use (&$token) {
+            $token = $notification->token;
+
+            return true;
+        });
+
+        $this->assertNotNull($token);
+
+        $this->get(route('password.reset', ['token' => $token, 'email' => $user->email]))
+            ->assertOk()
+            ->assertSee('Crear nueva contrasena');
+
+        $this->post('/restablecer-contrasena', [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'new-password123',
+            'password_confirmation' => 'new-password123',
+        ])->assertRedirect(route('login'));
+
+        $this->assertTrue(Hash::check('new-password123', $user->fresh()->password));
+
+        $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'new-password123',
+        ])->assertRedirect(route('garments.my'));
+
+        $this->assertAuthenticatedAs($user->fresh());
     }
 
     /**
